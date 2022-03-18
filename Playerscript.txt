@@ -1,0 +1,90 @@
+using UnityEngine;
+using UnityEngine.Events;
+
+public class PlayerScript : MonoBehaviour
+{
+    
+    public float MovementSpeed = 1;
+    public float JumpForce;
+    public Animator animator;
+    public UnityEvent OnLandEvent;
+    [SerializeField]
+    bool isGrounded = false;
+    public GameObject player; 
+    private Rigidbody2D RB;
+    private bool grounded;
+    AudioSource jumpsound;
+   
+
+    private void Start()
+    {
+        RB = GetComponent<Rigidbody2D>();
+        if (OnLandEvent == null)
+            OnLandEvent = new UnityEvent();
+         jumpsound = GetComponent<AudioSource>();
+    }
+    private void Update()
+    {
+        
+    var movement = Input.GetAxis("Horizontal");
+        transform.position += new Vector3(movement, 0, 0) * Time.deltaTime * MovementSpeed;
+        animator.SetFloat("Speed", Mathf.Abs(movement));
+        
+        if (movement < 0)
+        {
+            transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+        else if (movement > 0)
+        {
+            transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+
+
+        if(Input.GetKeyDown(KeyCode.Space) && grounded)
+        {
+            Jump();
+        }
+
+        
+    }
+    private void Jump()
+    {
+        jumpsound.Play();
+        if (isGrounded == true)
+        {
+            RB.AddForce(Vector2.up * JumpForce);
+            isGrounded = false;
+        }
+        grounded = false;
+        animator.SetBool("grounded", grounded);
+        animator.SetTrigger("jump");
+
+    }
+
+    public void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.CompareTag("ground"))
+        {
+            
+            if (isGrounded == false)
+            {
+                isGrounded = true;
+                
+            }
+            grounded = true;
+        }
+        
+    }
+  
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+
+        if(other.gameObject.CompareTag("milk"))
+        {
+            Destroy(other.gameObject);
+        }  
+    }
+
+    
+
+}

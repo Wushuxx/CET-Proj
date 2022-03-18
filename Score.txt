@@ -1,0 +1,27 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ScoreScript : MonoBehaviour
+{
+    public Text Milkscore;
+    private int Score;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        Score = 0; 
+        Milkscore.text = "Score : " + Score;
+    }
+
+    private void OnTriggerEnter2D(Collider2D Milk)
+    {
+        if(Milk.tag == "milk")
+        {
+            Score += 1;
+            Destroy(Milk.gameObject);
+            Milkscore.text = "Score : " + Score;
+            
+        }
+    }
+
+}
